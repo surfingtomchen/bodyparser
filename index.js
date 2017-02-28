@@ -83,7 +83,14 @@ module.exports = function (opts) {
 
   function* parseBody(ctx) {
     if (enableJson && ((detectJSON && detectJSON(ctx)) || ctx.request.is(jsonTypes))) {
-      return yield parse.json(ctx, jsonOpts);
+	
+      let result = yield parse.json(ctx, jsonOpts);
+      if (result.body) {
+        ctx.request.body = result.body
+        ctx.request.raw_body = result.raw
+      } else {
+        ctx.request.body = result
+      }
     }
     if (enableForm && ctx.request.is(formTypes)) {
       return yield parse.form(ctx, formOpts);
