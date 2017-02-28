@@ -85,13 +85,19 @@ module.exports = function (opts) {
     if (enableJson && ((detectJSON && detectJSON(ctx)) || ctx.request.is(jsonTypes))) {
 	
       let result = yield parse.json(ctx, jsonOpts);
+
       if (result.body) {
-        ctx.request.body = result.body
+
         ctx.request.raw_body = result.raw
+        
+        return result.body
+
       } else {
-        ctx.request.body = result
+
+        return result
       }
     }
+
     if (enableForm && ctx.request.is(formTypes)) {
       return yield parse.form(ctx, formOpts);
     }
@@ -100,6 +106,7 @@ module.exports = function (opts) {
     }
     return {};
   }
+
 };
 
 function formatOptions(opts, type) {
